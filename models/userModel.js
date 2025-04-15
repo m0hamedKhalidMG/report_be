@@ -20,7 +20,25 @@ class User {
     );
     return result.insertId;
   }
-
+  static async getProfileData(userId) {
+    const [rows] = await pool.query(
+      `SELECT 
+        id,
+        first_name,
+        second_name,
+        last_name,
+        national_id,
+        phone_number,
+        email,
+        postal_code,
+        birthday,
+        created_at
+       FROM users 
+       WHERE id = ?`,
+      [userId]
+    );
+    return rows[0];
+  }
   static async findByEmail(email) {
     const [rows] = await pool.query('SELECT * FROM users WHERE email = ?', [email]);
     return rows[0];

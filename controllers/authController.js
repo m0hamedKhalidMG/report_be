@@ -50,4 +50,25 @@ const login = async (req, res) => {
   }
 };
 
-module.exports = { register, login };
+const getUserData = async (req, res) => {
+  try {
+    const userId = req.user.userId; // From auth middleware
+    
+    const userData = await User.getProfileData(userId);
+    
+    if (!userData) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    
+    res.json({
+      message: 'User data retrieved successfully',
+      user: userData
+    });
+    
+  } catch (error) {
+    console.error('Error fetching user data:', error);
+    res.status(500).json({ error: 'Server error while fetching user data' });
+  }
+};
+
+module.exports = { register, login,getUserData };

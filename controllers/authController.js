@@ -40,8 +40,8 @@ const login = async (req, res) => {
       process.env.JWT_SECRET,
       { expiresIn: '30d' }
     );
+res.json({ token, type: user.user_type, name: user.first_name });
 
-    res.json({ token, type:user.user_type });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Server error' });

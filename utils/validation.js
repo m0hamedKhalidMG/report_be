@@ -46,4 +46,31 @@ const validateReportInput = (data) => {
   
     return schema.validate(data, { abortEarly: false });
   };
-module.exports = { validateRegisterInput,validateReportInput  ,validateUserUpdate};
+
+
+
+  const lawyerRegistrationSchema = Joi.object({
+    name: Joi.string().min(3).max(100).required()
+      .messages({
+        'string.empty': 'Name is required',
+        'string.min': 'Name must be at least 3 characters'
+      }),
+    email: Joi.string().email().required()
+      .messages({
+        'string.email': 'Please enter a valid email',
+        'string.empty': 'Email is required'
+      }),
+    password: Joi.string().min(8).required()
+      .messages({
+        'string.min': 'Password must be at least 8 characters',
+        'string.empty': 'Password is required'
+      })
+  });
+  
+  const validateLawyerRegistration = (data) => {
+    return lawyerRegistrationSchema.validate(data, { abortEarly: false });
+  };
+
+
+
+module.exports = { validateRegisterInput,validateReportInput ,validateLawyerRegistration ,validateUserUpdate,lawyerRegistrationSchema};

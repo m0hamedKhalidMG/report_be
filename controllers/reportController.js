@@ -64,8 +64,7 @@ const getReportWithUserDetails = async (req, res) => {
       if (!report) {
         return res.status(404).json({ error: 'Report not found' });
       }
-  
-      // Format the response
+      const nm = `${report.first_name} ${report.last_name}`;      // Format the response
       const response = {
         report: {
           id: report.id,
@@ -80,11 +79,10 @@ const getReportWithUserDetails = async (req, res) => {
         },
         user: report.user_id ? {
           id: report.user_id,
-          username: report.username,
+          username:nm,
           email: report.email,
           phone: report.phone_number,
           national_id:report.national_id,
-          created_at: report.user_created_at
         } : null
       };
   

@@ -5,7 +5,7 @@ class User {
   static async create(userData) {
     const hashedPassword = await bcrypt.hash(userData.password, 10);
     const [result] = await pool.query(
-      'INSERT INTO users (first_name, second_name, last_name, national_id, phone_number, email, password, postal_code, birthday) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+      'INSERT INTO users (first_name, second_name, last_name, national_id, phone_number, email, password, postal_code, birthday,user_type ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,?)',
       [
         userData.first_name,
         userData.second_name,
@@ -15,7 +15,8 @@ class User {
         userData.email,
         hashedPassword,
         userData.postal_code,
-        userData.birthday
+        userData.birthday,
+        userData.user_type 
       ]
     );
     return result.insertId;

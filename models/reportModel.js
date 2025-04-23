@@ -51,6 +51,7 @@ class Report {
         r.*, 
         u.id as user_id,
         u.first_name,
+                u.last_name,
         u.email,
         u.phone_number,
                 u.national_id,

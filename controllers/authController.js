@@ -38,7 +38,7 @@ const login = async (req, res) => {
     const token = jwt.sign(
       { type: user.user_type, email: user.email },
       process.env.JWT_SECRET,
-      { expiresIn: '300d' }
+      { expiresIn: '30d' }
     );
 
     res.json({ token, type:user.user_type });
@@ -68,5 +68,53 @@ const getUserData = async (req, res) => {
     res.status(500).json({ error: 'Server error while fetching user data' });
   }
 };
+const registerLawyer = async (req, res) => {
+  try {
+    
+    // Validate input
+    const { error } = validateLawyerRegistration(req.body);
+    if (error) {
+      return res.status(400).json({ 
+        error: 'Validation error',
+        details: error.details.map(d => d.message)
+      });
+    }
 
-module.exports = { register, login,getUserData };
+    // Check if email exists
+    const existingUser = await User.findByEmail(req.body.email);
+    if (existingUser) {
+      return res.status(400).json({ error: 'Email already exists' });
+    }
+
+    // Hash password
+    //const hashedPassword = await bcrypt.hash(req.body.password, 10);
+
+    // Create lawyer user
+    const lawyerData = {
+      first_name: req.body.name,
+      email: req.body.email,
+      password: req.body.password,
+      user_type: 'lawyer' 
+    };
+
+    const userId = await User.create(lawyerData);
+
+    // Generate JWT token
+    const token = jwt.sign(
+      { userId, email: req.body.email, user_type: 'lawyer' },
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' }
+    );
+
+    res.status(201).json({
+      message: 'Lawyer registered successfully',
+      type: 'lawyer',
+      token
+    });
+
+  } catch (error) {
+    console.error('Lawyer registration error:', error);
+    res.status(500).json({ error: 'Server error during registration' });
+  }
+};
+module.exports = { register, login,getUserData,registerLawyer };

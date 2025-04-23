@@ -1,10 +1,17 @@
 const express = require('express');
 const router = express.Router();
 const reportController = require('../controllers/reportController');
-const authenticate = require('../middlewares/authMiddleware');
+const {authenticateLawyer,authenticate} = require('../middlewares/authMiddleware');
 router.get('/my-reports', authenticate, reportController.getUserReports);
 router.get('/records/search', authenticate, reportController.searchRecords);
 router.get('/records/:id', authenticate, reportController.getRecordDetails);
+
+router.patch(
+    '/:reportId/status',
+    authenticateLawyer,
+    reportController.updateReportStatus
+  );
+
 // Public routes
 router.get('/:id', reportController.getReportWithUserDetails); // Updated this line
 

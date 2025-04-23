@@ -256,6 +256,51 @@ const getReportWithUserDetails = async (req, res) => {
       res.status(500).json({ error: 'Server error' });
     }
   };
+  const updateReportStatus = async (req, res) => {
+    try {
+      const { reportId } = req.params;
+      const { status } = req.body;
+      const lawyerId = req.user.userId; // From auth middleware
+  
+      // Validate status
+      const validStatuses = ['pending', 'under_investigation', 'resolved'];
+      if (!validStatuses.includes(status)) {
+        return res.status(400).json({ error: 'Invalid status value' });
+      }
+  
+      // Check if report exists and get current status
+      const [report] = await pool.query(
+        'SELECT * FROM crime_reports WHERE id = ?',
+        [reportId]
+      );
+  
+      if (report.length === 0) {
+        return res.status(404).json({ error: 'Report not found' });
+      }
+  
+      // Update status
+      const [result] = await pool.query(
+        'UPDATE crime_reports SET status = ? WHERE id = ?',
+        [status, reportId]
+      );
+  
+      if (result.affectedRows === 0) {
+        return res.status(400).json({ error: 'Failed to update status' });
+      }
+  
+   
+      res.json({
+        message: 'تم تحديث الحالة بنجاح',
+        reportId,
+        newStatus: status
+      });
+  
+    } catch (error) {
+      console.error('Status update error:', error);
+      res.status(500).json({ error: 'فشل تحديث الحالة' });
+    }
+  };
+  
 module.exports = { 
   createReport, 
   getReports, 
@@ -265,5 +310,6 @@ module.exports = {
   getMyFilteredReports,
   updateUser,
   searchRecords,
-  getRecordDetails
+  getRecordDetails,
+  updateReportStatus
 };
